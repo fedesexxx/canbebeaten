@@ -1,0 +1,114 @@
+prueba JavaScript vivan las gueritas mamonas
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de cambios de página...</title>
+    <p>con cariño x federico jimenez <3</p>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .log {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+    </style>
+    <script>
+        let contadorIniciado = false;
+        let tiempoInicio;
+        let tiempoDesenfoque;
+        let pestanaOculta = false; // Variable para controlar el estado de la pestaña
+
+        function formatearTiempo(tiempoEnMs) {
+            const totalSegundos = Math.floor(tiempoEnMs / 1000);
+            const minutos = Math.floor(totalSegundos / 60);
+            const segundos = totalSegundos % 60;
+            return `${minutos}m ${segundos}s`;
+        }
+
+        function logMessage(message) {
+            const logDiv = document.getElementById("log");
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+
+            // Calcula el tiempo transcurrido si el contador ha iniciado
+            let tiempoTranscurrido = "";
+            if (contadorIniciado) {
+                const ahora = new Date();
+                const diferencia = ahora - tiempoInicio;
+                tiempoTranscurrido = formatearTiempo(diferencia);
+            }
+
+            const newMessage = document.createElement("p");
+            newMessage.textContent = `${time} (${tiempoTranscurrido}) - ${message}`;
+            logDiv.appendChild(newMessage);
+            logDiv.scrollTop = logDiv.scrollHeight; // Auto-scroll al final
+        }
+
+        // Función para iniciar el contador
+        function iniciarContador() {
+            if (!contadorIniciado) {
+                contadorIniciado = true;
+                tiempoInicio = new Date();
+                logMessage("¡El contador ha comenzado!");
+            }
+        }
+
+        // Detecta cambios de visibilidad de la pestaña
+        document.addEventListener("visibilitychange", () => {
+            if (contadorIniciado) {
+                if (document.visibilityState === "hidden" && !pestanaOculta) {
+                    tiempoDesenfoque = new Date();
+                    pestanaOculta = true;
+                    logMessage("La pestaña está oculta");
+                } else if (document.visibilityState === "visible" && pestanaOculta) {
+                    const tiempoEnfocado = new Date();
+                    const diferencia = tiempoEnfocado - tiempoDesenfoque;
+                    const tiempoDesenfocadoFormateado = formatearTiempo(diferencia);
+                    logMessage(`Se ha vuelto a enfocar la pestaña después de ${tiempoDesenfocadoFormateado}`);
+                    pestanaOculta = false;
+                }
+            }
+        });
+
+        // Detecta cuando la ventana se desenfoca
+        window.addEventListener("blur", () => {
+            if (contadorIniciado && !pestanaOculta) {
+                tiempoDesenfoque = new Date();
+                pestanaOculta = true;
+                logMessage("La ventana está desenfocada");
+            }
+        });
+
+        // Detecta cuando la ventana se vuelve a enfocar
+        window.addEventListener("focus", () => {
+            if (contadorIniciado && pestanaOculta) {
+                const tiempoEnfocado = new Date();
+                const diferencia = tiempoEnfocado - tiempoDesenfoque;
+                const tiempoDesenfocadoFormateado = formatearTiempo(diferencia);
+                logMessage(`Se ha vuelto a enfocar la pestaña después de ${tiempoDesenfocadoFormateado}`);
+                pestanaOculta = false;
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Detección de eventos en tiempo real</h1>
+    <p>Interactúa con otras ventanas, cambia de pestaña o minimiza esta para ver los mensajes en tiempo real.</p>
+
+    <!-- Botón para iniciar el contador -->
+    <button onclick="iniciarContador()">Iniciar contador</button>
+
+    <div id="log" class="log">
+        <p>Eventos registrados aparecerán aquí...</p>
+    </div>
+</body>
+</html>
