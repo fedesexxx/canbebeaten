@@ -1,4 +1,5 @@
-prueba JavaScript vivan las gueritas mamonas
+prueba JavaScript 
+vivan las gueritas mamonas
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +59,7 @@ prueba JavaScript vivan las gueritas mamonas
             if (!contadorIniciado) {
                 contadorIniciado = true;
                 tiempoInicio = new Date();
-                logMessage("¡El contador ha comenzado!");
+                logMessage("Se empezara a registrar desde ahora...");
             }
         }
 
@@ -68,7 +69,7 @@ prueba JavaScript vivan las gueritas mamonas
                 if (document.visibilityState === "hidden" && !pestanaOculta) {
                     tiempoDesenfoque = new Date();
                     pestanaOculta = true;
-                    logMessage("La pestaña está oculta");
+                    logMessage("Ha salido de la pagina");
                 } else if (document.visibilityState === "visible" && pestanaOculta) {
                     const tiempoEnfocado = new Date();
                     const diferencia = tiempoEnfocado - tiempoDesenfoque;
@@ -101,14 +102,19 @@ prueba JavaScript vivan las gueritas mamonas
     </script>
 </head>
 <body>
-    <h1>Detección de eventos en tiempo real</h1>
+    <h1>Sistema de deteccion de Canvas</h1>
     <p>Interactúa con otras ventanas, cambia de pestaña o minimiza esta para ver los mensajes en tiempo real.</p>
 
     <!-- Botón para iniciar el contador -->
-    <button onclick="iniciarContador()">Iniciar contador</button>
+    <button onclick="iniciarContador()">Empezar a registrar</button>
 
     <div id="log" class="log">
         <p>Eventos registrados aparecerán aquí...</p>
     </div>
 </body>
+<noscript>
+  <div style="color: red; background: #ffe6e6; padding: 10px; border: 2px solid red; font-weight: bold;">
+    ⚠️ Vuelve a activar JavaScript, por favor.
+  </div>
+</noscript>
 </html>
