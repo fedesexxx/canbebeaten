@@ -7,7 +7,6 @@ vivan las gueritas mamonas
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detección de cambios de página...</title>
-    <p>con cariño x federico jimenez <3</p>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,7 +25,7 @@ vivan las gueritas mamonas
         let contadorIniciado = false;
         let tiempoInicio;
         let tiempoDesenfoque;
-        let pestanaOculta = false; // Variable para controlar el estado de la pestaña
+        let pestanaOculta = false;
 
         function formatearTiempo(tiempoEnMs) {
             const totalSegundos = Math.floor(tiempoEnMs / 1000);
@@ -40,7 +39,6 @@ vivan las gueritas mamonas
             const now = new Date();
             const time = now.toLocaleTimeString();
 
-            // Calcula el tiempo transcurrido si el contador ha iniciado
             let tiempoTranscurrido = "";
             if (contadorIniciado) {
                 const ahora = new Date();
@@ -48,28 +46,31 @@ vivan las gueritas mamonas
                 tiempoTranscurrido = formatearTiempo(diferencia);
             }
 
+            const fullMessage = `${time} (${tiempoTranscurrido}) - ${message}`;
             const newMessage = document.createElement("p");
-            newMessage.textContent = `${time} (${tiempoTranscurrido}) - ${message}`;
+            newMessage.textContent = fullMessage;
             logDiv.appendChild(newMessage);
-            logDiv.scrollTop = logDiv.scrollHeight; // Auto-scroll al final
+            logDiv.scrollTop = logDiv.scrollHeight;
+
+            let registros = JSON.parse(localStorage.getItem("registroEventos") || "[]");
+            registros.push(fullMessage);
+            localStorage.setItem("registroEventos", JSON.stringify(registros));
         }
 
-        // Función para iniciar el contador
         function iniciarContador() {
             if (!contadorIniciado) {
                 contadorIniciado = true;
                 tiempoInicio = new Date();
-                logMessage("Se empezara a registrar desde ahora...");
+                logMessage("Se empezará a registrar desde ahora...");
             }
         }
 
-        // Detecta cambios de visibilidad de la pestaña
         document.addEventListener("visibilitychange", () => {
             if (contadorIniciado) {
                 if (document.visibilityState === "hidden" && !pestanaOculta) {
                     tiempoDesenfoque = new Date();
                     pestanaOculta = true;
-                    logMessage("Ha salido de la pagina");
+                    logMessage("Ha salido de la página");
                 } else if (document.visibilityState === "visible" && pestanaOculta) {
                     const tiempoEnfocado = new Date();
                     const diferencia = tiempoEnfocado - tiempoDesenfoque;
@@ -80,7 +81,6 @@ vivan las gueritas mamonas
             }
         });
 
-        // Detecta cuando la ventana se desenfoca
         window.addEventListener("blur", () => {
             if (contadorIniciado && !pestanaOculta) {
                 tiempoDesenfoque = new Date();
@@ -89,7 +89,6 @@ vivan las gueritas mamonas
             }
         });
 
-        // Detecta cuando la ventana se vuelve a enfocar
         window.addEventListener("focus", () => {
             if (contadorIniciado && pestanaOculta) {
                 const tiempoEnfocado = new Date();
@@ -99,22 +98,37 @@ vivan las gueritas mamonas
                 pestanaOculta = false;
             }
         });
+
+        // Mostrar registros guardados al cargar
+        window.addEventListener("DOMContentLoaded", () => {
+            const logDiv = document.getElementById("log");
+            const registrosGuardados = JSON.parse(localStorage.getItem("registroEventos") || "[]");
+            registrosGuardados.forEach(msg => {
+                const p = document.createElement("p");
+                p.textContent = msg;
+                logDiv.appendChild(p);
+            });
+        });
     </script>
 </head>
 <body>
-    <h1>Sistema de deteccion de Canvas</h1>
+
+    <noscript>
+        <div style="color: red; background: #ffe6e6; padding: 10px; border: 2px solid red; font-weight: bold;">
+            ⚠️ JavaScript está desactivado en tu navegador. Esta página requiere JavaScript para funcionar correctamente.
+        </div>
+    </noscript>
+
+    <h1>Sistema de detección de Canvas</h1>
     <p>Interactúa con otras ventanas, cambia de pestaña o minimiza esta para ver los mensajes en tiempo real.</p>
 
-    <!-- Botón para iniciar el contador -->
     <button onclick="iniciarContador()">Empezar a registrar</button>
+    <button onclick="localStorage.removeItem('registroEventos'); location.reload();">Borrar registros</button>
 
     <div id="log" class="log">
         <p>Eventos registrados aparecerán aquí...</p>
     </div>
+
 </body>
-<noscript>
-  <div style="color: red; background: #ffe6e6; padding: 10px; border: 2px solid red; font-weight: bold;">
-    ⚠️ Vuelve a activar JavaScript, por favor.
-  </div>
-</noscript>
 </html>
+
